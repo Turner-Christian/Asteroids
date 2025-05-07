@@ -2,23 +2,30 @@ using UnityEngine;
 
 public class Ship : MonoBehaviour
 {
+    public GameManager gameManager; // Reference to the GameManager object
     public GameObject bulletPrefab; // Prefab for the bullet to be instantiated
     public GameObject shipExplosionPrefab; // Prefab for the ship explosion effect
     public float thrustDamp = 0.2f; // Damping factor for rotation speed
     public float turnSpeed = 5f; // Speed at which the ship turns
     public float thrustForce = 10f; // Thrust force applied to the ship when moving forward
     public float bulletSpeed = 15f; // Speed of the bullet
+    public bool isInvincible; // Flag to check if the ship is invincible
     public Transform firePoint; // Point from which the bullet
     private Rigidbody2D rb; // Reference to the ship's Rigidbody2D component
     private Animator animator; // Reference to the ship's Animator component
     private Vector2 shipVelocity;
-
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component attached to the ship
         rb.linearDamping = thrustDamp; // Set linear damping to reduce linear speed over time
         animator = GetComponent<Animator>(); // Get the Animator component attached to the ship
+    }
+
+    private void Start()
+    {
+        isInvincible = true; // Set the ship to be invincible at the start
+        Invoke("DisableInvincibility", 2f); // Call the DisableInvincibility method after 2 seconds
     }
 
     private void Update()
@@ -67,7 +74,16 @@ public class Ship : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Death(); // Call the Death method when the ship collides with an object
+        if (!isInvincible)
+        {
+            gameManager.Death(); // Call the Death method in the GameManager when the ship collides with an object
+        }
+    }
+
+    private void DisableInvincibility()
+    {
+        animator.SetBool("isMortal", true); // Set the animator parameter to indicate the ship is mortal
+        isInvincible = false; // Set the ship to be not invincible
     }
 
     private void RotateShip(float Direction)
@@ -83,21 +99,5 @@ public class Ship : MonoBehaviour
 
         // Combine ship's velocity with bullet's forward thrust
         bulletRb.linearVelocity = shipVelocity + (Vector2)(firePoint.up * bulletSpeed);
-    }
-
-    private void Death()
-    {
-        Instantiate(shipExplosionPrefab, transform.position, Quaternion.identity); // Instantiate the ship explosion effect at the ship's position
-
-        ParticleSystem ps = shipExplosionPrefab.GetComponent<ParticleSystem>();
-        shipVelocity = rb.linearVelocity; // Get the current velocity of the ship
-        var velocityOverLifetime = ps.velocityOverLifetime;
-        velocityOverLifetime.enabled = true;
-        velocityOverLifetime.space = ParticleSystemSimulationSpace.World;
-
-        velocityOverLifetime.x = new ParticleSystem.MinMaxCurve(shipVelocity.x);
-        velocityOverLifetime.x = new ParticleSystem.MinMaxCurve(shipVelocity.y);
-
-        Destroy(gameObject); // Destroy the ship
     }
 }

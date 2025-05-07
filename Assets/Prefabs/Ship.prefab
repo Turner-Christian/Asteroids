@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3235527824334390010
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7491850900092350432}
+  m_Layer: 0
+  m_Name: Fire Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7491850900092350432
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3235527824334390010}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.544, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 334284252583151103}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3321074538624560201
 GameObject:
   m_ObjectHideFlags: 0
@@ -13,9 +44,10 @@ GameObject:
   - component: {fileID: 2966213168139458465}
   - component: {fileID: 4565536303851317053}
   - component: {fileID: 4161202091397931784}
+  - component: {fileID: 9020571358699583933}
   m_Layer: 0
   m_Name: Ship
-  m_TagString: Untagged
+  m_TagString: Ship
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -32,7 +64,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 7491850900092350432}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2185303821369149999
@@ -47,13 +80,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e9bd7267d48c7d45894b977ad3bba76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  invincibleSprite: {fileID: 1752565832, guid: c63ff14f73d763242bea088f0aba9d61, type: 3}
+  normalSprite: {fileID: -8820715720815460284, guid: c63ff14f73d763242bea088f0aba9d61, type: 3}
+  gameManager: {fileID: 3666511235977969989, guid: a030b8f6f3746f04aa2a3541acbc5465, type: 3}
   bulletPrefab: {fileID: 2548151955350427507, guid: 560d4e730347f524cbab6e7e86a87749, type: 3}
   shipExplosionPrefab: {fileID: 4108190074503040745, guid: 0734e4f29e69118429fbd516a462ef47, type: 3}
-  thrustDamp: 0.2
-  turnSpeed: 5
+  thrustDamp: 0.5
+  turnSpeed: 200
   thrustForce: 10
-  bulletSpeed: 5
-  firePoint: {fileID: 0}
+  bulletSpeed: 10
+  isInvincible: 0
+  firePoint: {fileID: 7491850900092350432}
 --- !u!212 &2966213168139458465
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -166,7 +203,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -174,7 +211,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.8125, y: 1}
+    oldSize: {x: 1, y: 1}
     newSize: {x: 0.8125, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -182,3 +219,25 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.6476856, y: 0.78671306}
   m_EdgeRadius: 0
+--- !u!95 &9020571358699583933
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3321074538624560201}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 35e7335e19db8834cbfe854ffd60f668, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
