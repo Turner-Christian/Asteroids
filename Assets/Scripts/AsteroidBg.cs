@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class AsteroidBg : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class AsteroidBg : MonoBehaviour
     {
         if (other.CompareTag("Bullet"))
         {
+            GameManager.SCORE += 10; // Increment the score by 10 when an asteroid is destroyed
             Destroy(other.gameObject); // Destroy the bullet
             Instantiate(explosionPrefab, transform.position, Quaternion.identity); // Instantiate the explosion effect at the asteroid's position
             for (int i = 0; i < 2; i++)

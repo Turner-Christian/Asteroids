@@ -9,6 +9,7 @@ public class AsteroidMd : MonoBehaviour
     {
         if (other.CompareTag("Bullet"))
         {
+            GameManager.SCORE += 20; // Increment the score by 10 when an asteroid is destroyed
             Destroy(other.gameObject); // Destroy the bullet
             Instantiate(explosionPrefab, transform.position, Quaternion.identity); // Instantiate the explosion effect at the asteroid's position
             for (int i = 0; i < 3; i++)
