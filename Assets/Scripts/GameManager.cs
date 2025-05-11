@@ -15,17 +15,18 @@ public class GameManager : MonoBehaviour
     public GameObject shipPrefab; // Prefab for the ship
     public GameObject shipExplosionPrefab; // Prefab for
     public GameObject gameOverScreen; // Reference to the game over screen UI element
-    public int numOfAsteroids = 10; // Number of asteroids to spawn
     public float minSpawnDistance = 4f; // Safe radius around player
     public float maxSpawnDistance = 10f; // Camera boundary-ish
     public Transform playerTransform; // Reference to the player's transform
     public UnityEngine.UI.Image[] livesIcons; // Array of UI images for lives
     public int livesRemaining;
+    private int numOfAsteroids; // Number of asteroids to spawn
     private Rigidbody2D shipRb; // Reference to the ship's Rigidbody2D component
     private List<GameObject> lifeIcons = new(); // List to hold the life icons
 
     private void Awake()
     {
+        numOfAsteroids = 10; // Initial number of asteroids to spawn
         shipRb = shipPrefab.GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component attached to the ship prefab
     }
 
@@ -162,6 +163,17 @@ public class GameManager : MonoBehaviour
 
     public void StartLevel()
     {
+        SCORE += 500; // Increase the score by 100 for completing a level
+        numOfAsteroids += 2; // Increase the number of asteroids for the next level
         Spawner();
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit(); // Quit the application
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false; // Stop play mode in the editor
+#endif
     }
 }

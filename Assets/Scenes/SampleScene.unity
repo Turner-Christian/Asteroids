@@ -272,7 +272,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &369165732
 RectTransform:
   m_ObjectHideFlags: 0
@@ -651,7 +651,7 @@ GameObject:
   - component: {fileID: 835073880}
   - component: {fileID: 835073879}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Restart Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1269,7 +1269,7 @@ GameObject:
   - component: {fileID: 1899491502}
   - component: {fileID: 1899491501}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: Quit Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1338,7 +1338,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1899491502}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6906512526741166178}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: QuitGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1899491502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1782,7 +1794,6 @@ MonoBehaviour:
   shipPrefab: {fileID: 3321074538624560201, guid: a8d36b2e51614774c8d701a95e824845, type: 3}
   shipExplosionPrefab: {fileID: 4108190074503040745, guid: 0734e4f29e69118429fbd516a462ef47, type: 3}
   gameOverScreen: {fileID: 369165731}
-  numOfAsteroids: 10
   minSpawnDistance: 4
   maxSpawnDistance: 10
   playerTransform: {fileID: 2135235151}
