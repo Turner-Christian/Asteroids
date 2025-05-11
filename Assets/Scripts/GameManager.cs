@@ -95,16 +95,22 @@ public class GameManager : MonoBehaviour
             // Also assign GameManager to the ship script so it can call back
             Ship shipScript = newShip.GetComponent<Ship>();
             shipScript.gameManager = this;
+            shipScript.isDead = false; // Reset the dead state of the ship
         }
     }
 
     public void Death()
     {
+        if (playerTransform == null) return; // Prevents errors from destroyed ship
         Vector3 deathPos = playerTransform.position; // Get the position of the ship at the time of death
         Instantiate(shipExplosionPrefab, deathPos, Quaternion.identity); // Instantiate the explosion effect at the ship's position
         Destroy(playerTransform.gameObject);
         LoseLife(); // Decrease the life count
-        Invoke(nameof(RespawnShip), 2f); // Wait 2 seconds before respawning
+
+        if (livesRemaining > 0)
+        {
+            Invoke(nameof(RespawnShip), 2f); // Wait 2 seconds before respawning
+        }
     }
 
     public void LoseLife()
@@ -114,6 +120,15 @@ public class GameManager : MonoBehaviour
         if (livesRemaining <= 0)
         {
             gameOverScreen.SetActive(true); // Show the game over screen
+        }
+    }
+
+    public void DestroyAllAsteroids()
+    {
+        GameObject[] asteroids = GameObject.FindGameObjectsWithTag("Asteroid"); // Find all asteroids in the scene
+        foreach (GameObject asteroid in asteroids)
+        {
+            Destroy(asteroid); // Destroy each asteroid
         }
     }
 
@@ -128,10 +143,21 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        DestroyAllAsteroids(); // Destroy all existing asteroids
         SCORE = 0; // Reset the score to 0
         livesRemaining = 3; // Set the initial number of lives
-        Spawner(); // Spawn the initial asteroids
         gameOverScreen.SetActive(false); // Hide the game over screen
+        for (int i = 0; i < livesIcons.Length; i++)
+        {
+            livesIcons[i].gameObject.SetActive(true);
+        }
+        if (playerTransform != null)
+        {
+            Destroy(playerTransform.gameObject); // Destroy the existing ship if it exists
+            playerTransform = null; // Reset the playerTransform reference
+        }
+        RespawnShip(); // Respawn the ship
+        Spawner(); // Spawn the initial asteroids
     }
 
     public void StartLevel()

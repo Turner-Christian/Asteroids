@@ -10,6 +10,7 @@ public class Ship : MonoBehaviour
     public float thrustForce = 10f; // Thrust force applied to the ship when moving forward
     public float bulletSpeed = 15f; // Speed of the bullet
     public bool isInvincible; // Flag to check if the ship is invincible
+    public bool isDead = false; // Flag to check if the ship is dead
     public Transform firePoint; // Point from which the bullet
     private Rigidbody2D rb; // Reference to the ship's Rigidbody2D component
     private Animator animator; // Reference to the ship's Animator component
@@ -74,8 +75,12 @@ public class Ship : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (isDead) return; // If the ship is already dead, do nothing
+
+
         if (!isInvincible)
         {
+            isDead = true; // Set the ship to be dead
             gameManager.Death(); // Call the Death method in the GameManager when the ship collides with an object
         }
     }
