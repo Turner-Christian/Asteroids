@@ -8,6 +8,7 @@ TagManager:
   - Asteroid
   - Asteroid_MD
   - Ship
+  - ufoBullet
   layers:
   - Default
   - TransparentFX

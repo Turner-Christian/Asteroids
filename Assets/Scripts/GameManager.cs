@@ -12,14 +12,18 @@ public class GameManager : MonoBehaviour
     public GameObject asteroidBgPrefab; // Prefab for the background asteroid
     public GameObject asteroidMdPrefab; // Prefab for the medium asteroid
     public GameObject asteroidSmPrefab; // Prefab for the small asteroid
+    public GameObject ufoPrefab; // Prefab for the UFO
     public GameObject shipPrefab; // Prefab for the ship
     public GameObject shipExplosionPrefab; // Prefab for
     public GameObject gameOverScreen; // Reference to the game over screen UI element
     public float minSpawnDistance = 4f; // Safe radius around player
     public float maxSpawnDistance = 10f; // Camera boundary-ish
+    public float minUFOSpawnDistance = 11f; // Minimum distance for UFO spawn outside the camera
+    public float maxUFOSpawnDistance = 15f; // Maximum distance for UFO spawn outside the camera
     public Transform playerTransform; // Reference to the player's transform
     public UnityEngine.UI.Image[] livesIcons; // Array of UI images for lives
     public int livesRemaining;
+    public bool isHighScore; // Flag to check if the current score is a high score
     private int numOfAsteroids; // Number of asteroids to spawn
     private Rigidbody2D shipRb; // Reference to the ship's Rigidbody2D component
     private List<GameObject> lifeIcons = new(); // List to hold the life icons
@@ -32,7 +36,10 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log(PlayerPrefs.GetInt("HighScore", 0)); // Log the high score from PlayerPrefs
         StartGame(); // Start the game
+        InvokeRepeating(nameof(SpawnUFO), 10f, 15f); // Spawn UFOs every 10 seconds after an initial delay of 5 seconds
+        isHighScore = false; // Initialize the high score flag to false
     }
 
     public void Update()
@@ -86,6 +93,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void SpawnUFO()
+    {
+        Vector2 ufoSpawnPos = Random.insideUnitCircle.normalized * Random.Range(minUFOSpawnDistance, maxUFOSpawnDistance);
+        GameObject newUfo = Instantiate(ufoPrefab, ufoSpawnPos, Quaternion.identity); // Spawn the UFO at the calculated position
+        Ufo ufoScript = newUfo.GetComponent<Ufo>();
+        ufoScript.gameManager = this;
+    }
+
     private void RespawnShip()
     {
         if (livesRemaining > 0)
@@ -121,6 +136,26 @@ public class GameManager : MonoBehaviour
         if (livesRemaining <= 0)
         {
             gameOverScreen.SetActive(true); // Show the game over screen
+
+            // Check if the current score is a high score
+            if (SCORE > PlayerPrefs.GetInt("HighScore", 0))
+            {
+                PlayerPrefs.SetInt("HighScore", SCORE); // Update the high score if the current score is higher
+                PlayerPrefs.Save(); // Save the PlayerPrefs
+                isHighScore = true; // Set the high score flag to true
+                Debug.Log("New High Score: " + SCORE);
+            }
+            else
+            {
+                isHighScore = false; // Reset the high score flag if no new high score
+            }
+
+            // Notify BlinkingText script to update the text visibility
+            var blinkingText = FindObjectOfType<BlinkingText>(); // Find the BlinkingText in the scene
+            if (blinkingText != null)
+            {
+                blinkingText.StartBlinking(); // Restart the blinking if needed
+            }
         }
     }
 
@@ -144,8 +179,10 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        Debug.Log(PlayerPrefs.GetInt("HighScore", 0)); // Log the high score from PlayerPrefs
         DestroyAllAsteroids(); // Destroy all existing asteroids
         SCORE = 0; // Reset the score to 0
+        isHighScore = false; // Initialize the high score flag to false
         livesRemaining = 3; // Set the initial number of lives
         gameOverScreen.SetActive(false); // Hide the game over screen
         for (int i = 0; i < livesIcons.Length; i++)

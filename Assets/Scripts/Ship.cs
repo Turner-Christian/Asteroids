@@ -78,6 +78,12 @@ public class Ship : MonoBehaviour
         if (isDead) return; // If the ship is already dead, do nothing
 
 
+        if (collision.CompareTag("ufoBullet") && isInvincible)
+        {
+            gameManager.Death(); // Call the Death method in the GameManager when the ship collides with a UFO bullet
+            return; // Exit the method to prevent further processing
+        }
+
         if (!isInvincible)
         {
             isDead = true; // Set the ship to be dead
