@@ -1,7 +1,11 @@
 using UnityEngine;
+using System.Collections; // For using coroutines
 
 public class Ship : MonoBehaviour
 {
+    public AudioSource fireSource;  // Reference to the AudioSource for firing sound
+    public AudioClip fireSoundClip; // Reference to the AudioClip for firing sound
+    public AudioSource thrustSource; // Reference to the AudioSource component
     public GameManager gameManager; // Reference to the GameManager object
     public GameObject bulletPrefab; // Prefab for the bullet to be instantiated
     public GameObject shipExplosionPrefab; // Prefab for the ship explosion effect
@@ -11,16 +15,22 @@ public class Ship : MonoBehaviour
     public float bulletSpeed = 15f; // Speed of the bullet
     public bool isInvincible; // Flag to check if the ship is invincible
     public bool isDead = false; // Flag to check if the ship is dead
+    private bool isThrusting; // Flag to check if the ship is thrusting
     public Transform firePoint; // Point from which the bullet
     private Rigidbody2D rb; // Reference to the ship's Rigidbody2D component
     private Animator animator; // Reference to the ship's Animator component
     private Vector2 shipVelocity;
+    public float minPitch = 0.8f; // Minimum pitch value
+    public float maxPitch = 1.2f; // Maximum pitch value
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component attached to the ship
         rb.linearDamping = thrustDamp; // Set linear damping to reduce linear speed over time
         animator = GetComponent<Animator>(); // Get the Animator component attached to the ship
+
+        if (thrustSource == null)
+        thrustSource = GetComponent<AudioSource>(); // Automatically grab the attached AudioSource
     }
 
     private void Start()
@@ -31,6 +41,24 @@ public class Ship : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKey(KeyCode.W))
+        {
+            if (!isThrusting)
+            {
+                isThrusting = true; // Set the thrusting flag to true
+                thrustSource.volume = 0.5f; // Start the sound with low volume, gradually increase.
+                thrustSource.Play(); // Play the thrust sound when the ship is moving forward
+            }
+        }
+        else
+        {
+            if (isThrusting)
+            {
+                isThrusting = false; // Set the thrusting flag to false
+                StartCoroutine(FadeOutSound());
+            }
+        }
+
         if (transform.position.y > 6f)
         {
             transform.position = new Vector3(transform.position.x, -6f, transform.position.z); // Wrap around the screen vertically
@@ -62,14 +90,14 @@ public class Ship : MonoBehaviour
             RotateShip(horizontalInput);
         }
 
-        if (Input.GetKey(KeyCode.W))
+        if (isThrusting)
         {
-            animator.SetBool("isMoving", true); // Set the animator parameter to indicate the ship is moving
-            rb.AddForce(transform.up * thrustForce); // Apply thrust force in the direction the ship is facing
+            animator.SetBool("isMoving", true);
+            rb.AddForce(transform.up * thrustForce);
         }
         else
         {
-            animator.SetBool("isMoving", false); // Set the animator parameter to indicate the ship is not moving
+            animator.SetBool("isMoving", false);
         }
     }
 
@@ -91,6 +119,17 @@ public class Ship : MonoBehaviour
         }
     }
 
+    private IEnumerator FadeOutSound()
+    {
+        while (thrustSource.volume > 0)
+        {
+            thrustSource.volume -= Time.deltaTime * 2; // Fade out smoothly
+            yield return null;
+        }
+        thrustSource.Stop();
+        thrustSource.volume = 1; // Reset volume to normal
+    }
+
     private void DisableInvincibility()
     {
         animator.SetBool("isMortal", true); // Set the animator parameter to indicate the ship is mortal
@@ -110,5 +149,11 @@ public class Ship : MonoBehaviour
 
         // Combine ship's velocity with bullet's forward thrust
         bulletRb.linearVelocity = shipVelocity + (Vector2)(firePoint.up * bulletSpeed);
+
+        if (fireSource != null && fireSoundClip != null)
+        {
+            fireSource.pitch = Random.Range(minPitch, maxPitch);
+            fireSource.PlayOneShot(fireSoundClip); // Play the firing sound
+        }
     }
 }

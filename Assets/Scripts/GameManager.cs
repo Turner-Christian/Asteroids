@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Microsoft.Unity.VisualStudio.Editor;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +15,7 @@ public class GameManager : MonoBehaviour
     public GameObject shipPrefab; // Prefab for the ship
     public GameObject shipExplosionPrefab; // Prefab for
     public GameObject gameOverScreen; // Reference to the game over screen UI element
+    public GameObject pauseScreen; // Reference to the game over screen UI element
     public float minSpawnDistance = 4f; // Safe radius around player
     public float maxSpawnDistance = 10f; // Camera boundary-ish
     public float minUFOSpawnDistance = 11f; // Minimum distance for UFO spawn outside the camera
@@ -36,7 +36,6 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log(PlayerPrefs.GetInt("HighScore", 0)); // Log the high score from PlayerPrefs
         StartGame(); // Start the game
         InvokeRepeating(nameof(SpawnUFO), 10f, 15f); // Spawn UFOs every 10 seconds after an initial delay of 5 seconds
         isHighScore = false; // Initialize the high score flag to false
@@ -44,6 +43,10 @@ public class GameManager : MonoBehaviour
 
     public void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape)) // Check if the Escape key is pressed
+        {
+            PauseGame(); // Call the PauseGame method to toggle pause state
+        }
         scoreText.text = SCORE.ToString();
         NoAsteroids(); // Check if there are any asteroids left in the scene
     }
@@ -129,6 +132,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    [System.Obsolete]
     public void LoseLife()
     {
         livesRemaining--;
@@ -179,7 +183,6 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        Debug.Log(PlayerPrefs.GetInt("HighScore", 0)); // Log the high score from PlayerPrefs
         DestroyAllAsteroids(); // Destroy all existing asteroids
         SCORE = 0; // Reset the score to 0
         isHighScore = false; // Initialize the high score flag to false
@@ -213,4 +216,19 @@ public class GameManager : MonoBehaviour
         UnityEditor.EditorApplication.isPlaying = false; // Stop play mode in the editor
 #endif
     }
+
+    public void PauseGame()
+    {
+        if (Time.timeScale == 0)
+        {
+            Time.timeScale = 1; // Resume the game by setting time scale to 1
+            pauseScreen.SetActive(false); // Hide the pause screen
+        }
+        else
+        {
+            Time.timeScale = 0; // Pause the game by setting time scale to 0
+            pauseScreen.SetActive(true); // Show the pause screen
+        }
+    }
+
 }
